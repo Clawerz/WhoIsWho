@@ -1,8 +1,16 @@
+#Based on Network Sniffer : https://www.youtube.com/watch?v=WGJC5vT5YJo&list=PL6gx4Cwl9DGDdduy0IPDDHYnUx66Vc4ed&fbclid=IwAR3nrgn2wFhOo6DWEngcIgPPHb-mZqEBYliRxCVithn0FlMNEXJzr5hrdTQ
+
 import socket
 import struct
 import textwrap
+import time
 
-def main():
+# "Sniffs" network during time seconds
+def sniffer_main(captureTime):
+
+    elapsed_time = 0
+    start_time = time.time()
+    byte_number = 0;
 
     TAB_1 ='\t - '
     TAB_2 ='\t\t - '
@@ -17,7 +25,7 @@ def main():
     # Use AF_PACKET if on Linux/ AF_INET on Windows
     conn = socket.socket(socket.AF_PACKET, socket.SOCK_RAW,  socket.ntohs(3))
     
-    while True:
+    while elapsed_time < captureTime:
         raw_data, addr = conn.recvfrom(65535)
         dest_mac, src_mac, eth_proto, data = ethernet_frame(raw_data)
         print('\nEthernet Frame:')
@@ -37,6 +45,8 @@ def main():
                 print(TAB_2 + 'Type: {}, Code: {}, Checksum: {}'.format(icmp_type, code, checksum))
                 print(TAB_2 + 'Data: ')
                 print(format_multi_line(DATA_TAB_3, data))
+                print(TAB_2 + 'Byte Count: {}'.format(len(data)))
+                byte_number = byte_number + len(data)
 
             # TCP
             elif proto == 6:
@@ -48,18 +58,28 @@ def main():
                 print(TAB_3 + 'URG: {}, ACK: {}, PSH: {}, RST: {}, SYN: {}, FIN:{}'.format(flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin))
                 print(TAB_2 + 'Data: ')
                 print(format_multi_line(DATA_TAB_3, data))
+                print(TAB_2 + 'Byte Count: {}'.format(len(data)))
+                byte_number = byte_number + len(data)
 
             # UDP
             elif proto == 17:
                 src_port, dest_port, size, data = udp_segment(data)
                 print(TAB_1 + 'UDP segment: ')
                 print(TAB_2 + 'Source Port: {}, Destination Port: {}, Length: {}'.format(src_port, dest_port, size))
+                print(TAB_2 + 'Byte Count: {}'.format(len(data)))
+                byte_number = byte_number + len(data)
 
             # Other
             else:
                 print(TAB_1 + 'Data: ')
                 print(format_multi_line(DATA_TAB_2, data))
+                print(TAB_2 + 'Byte Count: {}'.format(len(data)))
+                byte_number = byte_number + len(data)
 
+        # Update elapsed time        
+        elapsed_time = time.time() - start_time;
+
+    return byte_number
 
 
 # Unpack ethernet frame
@@ -115,4 +135,4 @@ def format_multi_line(prefix, string, size=80):
             size -= 1
     return '\n'.join([prefix + line for line in textwrap.wrap(string, size)])
 
-main()
+# sniffer_main()
