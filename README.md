@@ -1,5 +1,5 @@
 # Who is Who
-![](https://i.imgur.com/ln5BOMH.png
+![](https://i.imgur.com/ln5BOMH.png)
 
 # About
 TPR Projecto 2019<br>
