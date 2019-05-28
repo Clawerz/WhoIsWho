@@ -135,4 +135,4 @@ def format_multi_line(prefix, string, size=80):
             size -= 1
     return '\n'.join([prefix + line for line in textwrap.wrap(string, size)])
 
-# sniffer_main()
+#sniffer_main()
