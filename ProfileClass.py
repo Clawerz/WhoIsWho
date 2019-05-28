@@ -1,7 +1,15 @@
-import numpy as np 
+import numpy as np
 import scipy.stats as stats
-import matplotlib.pyplot as plt 
+import scipy.signal as signal
+import matplotlib
+matplotlib.use("TkAgg")
+import matplotlib.mlab as mlab
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+import time
 import sys
+import warnings
+warnings.filterwarnings('ignore')
 
 
 def waitforEnter(fstop=True):
@@ -76,13 +84,27 @@ def extractFeatures(data,Class=0):
 # Plots all the features
 def plotFeatures(features,oClass,f1index=0,f2index=1):
 	nObs,nFea=features.shape
-	
+
 	colors=['b','g','r']
 	for i in range(nObs):
 		plt.plot(features[i],'o'+colors[int(oClass[i])])
 
 	plt.show()
 	waitforEnter()
+
+# 7
+# Extracts features from wavelet
+def extractFeaturesWavelet(data,scales=[2,4,8,16,32],Class=0):
+	features=[]
+	nObs,nSamp=data.shape
+	oClass=np.ones((nObs,1))*Class
+	for i in range(nObs):
+		scalo_features=np.array([])
+		scalo,fscales=scalogram.scalogramCWT(data[i,:],scales)
+		scalo_features=np.append(scalo_features,scalo)
+		features.append(scalo_features)
+		
+	return(np.array(features),oClass)
 
 ################ Main Code #######################
 
@@ -106,7 +128,6 @@ plt.ylabel('Bytes/sec')
 plt.show()
 waitforEnter()
 
-
 # 3
 # Extract and print features
 features_traffic, oClass_traffic = extractFeatures(traffic_data_train,Class=0)
@@ -114,11 +135,47 @@ features= np.vstack(features_traffic)
 oClass= np.vstack(oClass_traffic)
 print('\nTrain Stats Features Size:', features.shape)
 
-
-#4
+# 4
 # Plots the features extracted
 plt.figure(4)
 plotFeatures(features, oClass, 0, 1)
 
+# 7
+# Extracts features from wavelet
+import scalogram
+scales=[2,4,8,16,32,64,128,256]
+features_kid_W,oClass_kid=extractFeaturesWavelet(traffic_data_train,scales,Class=0)
 
+featuresW=np.vstack((features_kid_W))
+oClass=np.vstack((oClass_kid))
 
+print('Train Wavelet Features Size:',featuresW.shape)
+plt.figure(7)
+plotFeatures(featuresW,oClass,3,10)
+
+# 8
+# Reduces features to 3
+from sklearn.decomposition import PCA
+pca = PCA(n_components=2, svd_solver='full')
+pcaFeatures = pca.fit(features).transform(features)
+plt.figure(8)
+plotFeatures(pcaFeatures,oClass,0,1)
+
+# 9
+# Reduces features from Wavelet to 3
+pca = PCA(n_components=2, svd_solver='full')
+pcaFeatures = pca.fit(featuresW).transform(featuresW)
+
+plt.figure(9)
+plotFeatures(pcaFeatures,oClass,0,1)
+
+# 10
+# Reduces all features extracted to 3
+allFeatures=np.hstack((features,featuresW))
+print('Train (All) Features Size:',allFeatures.shape)
+
+pca = PCA(n_components=2, svd_solver='full')
+pcaFeatures = pca.fit(allFeatures).transform(allFeatures)
+
+plt.figure(10)
+plotFeatures(pcaFeatures,oClass,0,1)
