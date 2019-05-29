@@ -4,13 +4,18 @@ import socket
 import struct
 import textwrap
 import time
+import netifaces
+import getmac
 
 # "Sniffs" network during time seconds
 def sniffer_main(captureTime):
 
     elapsed_time = 0
     start_time = time.time()
-    byte_number = 0;
+    byte_number_download = 0
+    byte_number_upload = 0
+    #pc_mac = mac_for_ip().upper()
+    pc_mac = getmac.get_mac_address().upper()
 
     TAB_1 ='\t - '
     TAB_2 ='\t\t - '
@@ -28,6 +33,7 @@ def sniffer_main(captureTime):
     while elapsed_time < captureTime:
         raw_data, addr = conn.recvfrom(65535)
         dest_mac, src_mac, eth_proto, data = ethernet_frame(raw_data)
+        print(pc_mac, src_mac)
         print('\nEthernet Frame:')
         print(TAB_1 + 'Destination : {}, Source: {}, Protocol: {}'.format(dest_mac, src_mac, eth_proto))
         
@@ -46,7 +52,11 @@ def sniffer_main(captureTime):
                 print(TAB_2 + 'Data: ')
                 print(format_multi_line(DATA_TAB_3, data))
                 print(TAB_2 + 'Byte Count: {}'.format(len(data)))
-                byte_number = byte_number + len(data)
+
+                if src_mac == pc_mac :
+                    byte_number_upload = byte_number_upload + len(data)
+                else :
+                    byte_number_download = byte_number_download + len(data)
 
             # TCP
             elif proto == 6:
@@ -59,7 +69,11 @@ def sniffer_main(captureTime):
                 print(TAB_2 + 'Data: ')
                 print(format_multi_line(DATA_TAB_3, data))
                 print(TAB_2 + 'Byte Count: {}'.format(len(data)))
-                byte_number = byte_number + len(data)
+
+                if src_mac == pc_mac :
+                    byte_number_upload = byte_number_upload + len(data)
+                else :
+                    byte_number_download = byte_number_download + len(data)
 
             # UDP
             elif proto == 17:
@@ -67,19 +81,27 @@ def sniffer_main(captureTime):
                 print(TAB_1 + 'UDP segment: ')
                 print(TAB_2 + 'Source Port: {}, Destination Port: {}, Length: {}'.format(src_port, dest_port, size))
                 print(TAB_2 + 'Byte Count: {}'.format(len(data)))
-                byte_number = byte_number + len(data)
+
+                if src_mac == pc_mac :
+                    byte_number_upload = byte_number_upload + len(data)
+                else :
+                    byte_number_download = byte_number_download + len(data)
 
             # Other
             else:
                 print(TAB_1 + 'Data: ')
                 print(format_multi_line(DATA_TAB_2, data))
                 print(TAB_2 + 'Byte Count: {}'.format(len(data)))
-                byte_number = byte_number + len(data)
+
+                if src_mac == pc_mac :
+                    byte_number_upload = byte_number_upload + len(data)
+                else :
+                    byte_number_download = byte_number_download + len(data)
 
         # Update elapsed time        
         elapsed_time = time.time() - start_time;
 
-    return byte_number
+    return byte_number_download, byte_number_upload
 
 
 # Unpack ethernet frame
@@ -135,4 +157,9 @@ def format_multi_line(prefix, string, size=80):
             size -= 1
     return '\n'.join([prefix + line for line in textwrap.wrap(string, size)])
 
+import uuid
+def mac_for_ip():
+    # after each 2 digits, join elements of getnode().
+    #print ("The formatted MAC address is : ", end="")
+    return (':'.join(['{:02x}'.format((uuid.getnode() >> elements) & 0xff) for elements in range(0,2*6,2)][::-1]))
 #sniffer_main()

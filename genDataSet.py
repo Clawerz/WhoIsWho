@@ -21,13 +21,17 @@ def mainGen():
 		elapsed_time = time.time() - start_time;
 	
 	print(*byte_set, sep = ", ")  
-	createDat(sys.argv[1]+'.dat', str(byte_set))
+	createDat(sys.argv[1]+'.dat', byte_set)
 
 # Creates a .dat file with the dataset generated
 def createDat(name,data):
 
 	f = open(name, "w")
-	f.write(data)
+	for i in data:
+		f.write(str(i[0])+' '+str(i[1])+'\n')
+	#nRows,nCols = data.shape;
+	#print(nRows, nCols)
+	#f.write(data)
 	f.close()
 
 mainGen()
