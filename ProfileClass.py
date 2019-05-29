@@ -260,26 +260,27 @@ for i in range(nObsTest):
 
 # 12
 # Classification based on highest probability 
-#from scipy.stats import multivariate_normal
-#print('\n-- Classification based on Multivariate PDF (PCA Features) --')
-#means={}
-#for c in range(2):
-#	pClass=(oClass==c).flatten()
-#	means.update({c:np.mean(pcaFeatures[pClass,:],axis=0)})
-#print(means)
+from scipy.stats import multivariate_normal
+print('\n-- Classification based on Multivariate PDF (PCA Features) --')
+means={}
+for c in range(3):
+	pClass=(oClass==c).flatten()
+	means.update({c:np.mean(pcaFeatures[pClass,:],axis=0)})
+print(means)
 
-#covs={}
-#for c in range(2):
-#	pClass=(oClass==c).flatten()
-#	covs.update({c:np.cov(pcaFeatures[pClass,:],rowvar=0)})
-#print(covs)
+covs={}
+for c in range(3):
+	pClass=(oClass==c).flatten()
+	covs.update({c:np.cov(pcaFeatures[pClass,:],rowvar=0)})
+print(covs)
 
-#testpcaFeatures=pca.transform(alltestFeatures)	#uses pca fitted above, only transforms test data
-#print(testpcaFeatures)
-#nObsTest,nFea=testpcaFeatures.shape
-#for i in range(nObsTest):
-#	x=testpcaFeatures[i,:]
-	#probs=np.array([multivariate_normal.pdf(x,means[0],covs[0]),multivariate_normal.pdf(x,means[1],covs[1]),multivariate_normal.pdf(x,means[2],covs[2])])
-#	testClass=np.argsort(probs)[-1]
+testpcaFeatures=pca.transform(alltestFeatures)	#uses pca fitted above, only transforms test data
+print(testpcaFeatures)
+nObsTest,nFea=testpcaFeatures.shape
+
+for i in range(nObsTest):
+	x=testpcaFeatures[i,:]
+	probs=np.array([multivariate_normal.pdf(x,means[0],covs[0]),multivariate_normal.pdf(x,means[1],covs[1]),multivariate_normal.pdf(x,means[2],covs[2])])
+	testClass=np.argsort(probs)[-1]
 	
-#	print('Obs: {:2}: Probabilities: [{:.4e},{:.4e}] -> Classification: {} -> {}'.format(i,*probs,testClass,Classes[testClass]))
+	print('Obs: {:2}: Probabilities: [{:.4e},{:.4e}, {:.4e}] -> Classification: {} -> {}'.format(i,*probs,testClass,Classes[testClass]))

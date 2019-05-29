@@ -53,8 +53,36 @@ output:
 [0, 77, 0, 45, 7653, 53, 564, 0, 0, 27806, 4734, 13721, 4174, 11834, 355825, 70451, 77, 2181, 438227, 76862, 24, 8, 66, 0, 45, 77, 128, 0, 1036, 1128, 382, 8, 1692, 0, 45]
 ```
 
+### ProfileClass.py
+`plot` - Function that does a plot based on a data array and a name
+`breakTrainTest` - Breaks data into trains
+`extractFeatures` - Extracts features from trains
+`plotFeatures` - Plots all the features
+`distance` - Normal distance function
+
+output: 
+```
+In the end the script shall output the statistical profile atribution in the following format
+-- Classification based on Distances --
+Obs:  0: Normalized Distances to Centroids: [0.0886,0.1313,0.7801] -> Classification: 0 -> Plot1
+Obs:  1: Normalized Distances to Centroids: [0.0883,0.0991,0.8126] -> Classification: 0 -> Plot1
+Obs:  2: Normalized Distances to Centroids: [0.2513,0.2599,0.4888] -> Classification: 0 -> Plot1
+Obs:  3: Normalized Distances to Centroids: [0.2515,0.2588,0.4897] -> Classification: 0 -> Plot1
+Obs:  4: Normalized Distances to Centroids: [0.2912,0.3653,0.3435] -> Classification: 0 -> Plot1
+Obs:  5: Normalized Distances to Centroids: [0.2742,0.3511,0.3747] -> Classification: 0 -> Plot1
+```
+
 # Profile atribution
 A profile is atributed based on the amount of bytes per second that the user sends/receives, this way it isn't need to verify the type(video, image, browsing...) of the packets but only the amount of bytes in transaction.
+
+# Libraries
+The following python libraries are need for the system to run
+* numpy
+* matplotlib
+* scipy
+* sklearn
+* tkinter
+
 
 ## Autores
 * Filipe Reis - filipereis96@ua.pt
