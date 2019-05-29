@@ -123,7 +123,7 @@ def distance(c,p):
 
 ################ Main Code #######################
 
-Classes={0:'Plot1',1:'Plot2',2:'Plot3'}
+Classes={0:'Adult',1:'Kid',2:'Teenager'}
 
 # 1
 # Read data from files and plot the download + upload traffic
@@ -133,7 +133,7 @@ traffic_data2 = np.loadtxt(sys.argv[2])
 traffic_data3 = np.loadtxt(sys.argv[3])
 
 plt.figure(1)
-plot(traffic_data,'Plot1 Title',traffic_data2,'Plot2 Title',traffic_data3,'Plot2 Title')
+plot(traffic_data,'Adult',traffic_data2,'Kid',traffic_data3,'Teenager')
 
 # 2
 # Divide each stream in observation windows of 5 minutes
@@ -147,21 +147,21 @@ plt.subplot(3,1,1)
 for i in range(2):
 	plt.plot(traffic_data_train[i],'b')
 	plt.plot(traffic_data_test[i],'g')
-plt.title('Plot1')
+plt.title('Adult')
 plt.ylabel('Bytes/sec')
 
 plt.subplot(3,1,2)
 for i in range(2):
 	plt.plot(traffic_data_train2[i],'b')
 	plt.plot(traffic_data_test2[i],'g')
-plt.title('Plot2')
+plt.title('Kid')
 plt.ylabel('Bytes/sec')
 
 plt.subplot(3,1,3)
 for i in range(2):
 	plt.plot(traffic_data_train3[i],'b')
 	plt.plot(traffic_data_test3[i],'g')
-plt.title('Plot3')
+plt.title('Teenager')
 plt.ylabel('Bytes/sec')
 
 plt.show()
