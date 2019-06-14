@@ -40,23 +40,23 @@ def plot(data,name,data1,name1,data2,name2):
 # Breaks data into trains
 def breakTrainTest(data,oWnd=300,trainPerc=0.5):
 	#print(data.shape[0]	%2)
+	nSamp,nCols= data.shape
 	if data.shape[0]%oWnd != 0 :
 		data = data[0:(int(data.shape[0]/oWnd))*oWnd]
 		nSamp = data.shape[0]
 	else :
 		nSamp=data.shape[0]
-
-	nCols = 1
+	
 	nObs=int(nSamp/oWnd)
 
-	data_obs=data.reshape(nObs,oWnd) #??
+	data_obs=data.reshape((nObs,oWnd,nCols))
 
 	order=np.random.permutation(nObs)
 
 	nTrain=int(nObs*trainPerc)
 
-	data_train=data_obs[order[:nTrain],:]
-	data_test=data_obs[order[nTrain:],:]
+	data_train=data_obs[order[:nTrain],:,:]
+	data_test=data_obs[order[nTrain:],:,:]
 
 	return(data_train,data_test)
 
@@ -65,23 +65,23 @@ def breakTrainTest(data,oWnd=300,trainPerc=0.5):
 def extractFeatures(data,Class=0):
         features=[]
         #print(data.shape)
-        nObs=data.shape[0]#sum(1 for _ in data)
+        nObs,nSamp,nCols=data.shape
         oClass=np.ones((nObs,1))*Class
 
         for i in range(nObs):
         	print('\nTrain number : {}'.format(i))
-	        M1=np.mean(data[i],axis=0)
+	        M1=np.mean(data[i,:,:],axis=0)
 	        print('Mean',M1)
-	        Md1=np.median(data[i],axis=0)
+	        Md1=np.median(data[i,:,:],axis=0)
 	        print('Median',Md1)
-	        Std1=np.std(data[i],axis=0)
+	        Std1=np.std(data[i,:,:],axis=0)
 	        print('Deviation',Std1)
-	        S1=stats.skew(data[i])
+	        S1=stats.skew(data[i,:,:])
 	        print('Skew',S1)
-	        K1=stats.kurtosis(data[i])
+	        K1=stats.kurtosis(data[i,:,:])
 	        print('Kurtosis',K1)
 	        p=[75,90,95]
-	        Pr1=np.array(np.percentile(data[i],p,axis=0)).T.flatten()
+	        Pr1=np.array(np.percentile(data[i,:,:],p,axis=0)).T.flatten()
 	        print('Percentile(75, 90, 95)',Pr1)
 	        
 	        faux=np.hstack((M1,Md1,Std1,S1,K1,Pr1))
@@ -106,12 +106,14 @@ def plotFeatures(features,oClass,f1index=0,f2index=1):
 # Extracts features from wavelet
 def extractFeaturesWavelet(data,scales=[2,4,8,16,32],Class=0):
 	features=[]
-	nObs,nSamp=data.shape
+	nObs,nSamp,nCols=data.shape
 	oClass=np.ones((nObs,1))*Class
 	for i in range(nObs):
 		scalo_features=np.array([])
-		scalo,fscales=scalogram.scalogramCWT(data[i,:],scales)
-		scalo_features=np.append(scalo_features,scalo)
+		for c in range(nCols):
+			scalo,fscales=scalogram.scalogramCWT(data[i,:,c],scales)
+			scalo_features=np.append(scalo_features,scalo)
+		
 		features.append(scalo_features)
 		
 	return(np.array(features),oClass)
@@ -234,14 +236,14 @@ for c in range(3):
 	centroids.update({c:np.mean(allFeatures[pClass,:],axis=0)})
 print('All Features Centroids:\n',centroids)
 
-traffic_data_test,oClass_traffic = extractFeatures(traffic_data_test,Class=0)
-traffic_data_test2,oClass_traffic2 = extractFeatures(traffic_data_test2,Class=1)
-traffic_data_test3,oClass_traffic3 = extractFeatures(traffic_data_test3,Class=2)
+traffic_data_testFeatures,oClass_traffic = extractFeatures(traffic_data_test,Class=0)
+traffic_data_test2Features,oClass_traffic2 = extractFeatures(traffic_data_test2,Class=1)
+traffic_data_test3Features,oClass_traffic3 = extractFeatures(traffic_data_test3,Class=2)
 testFeatures=np.vstack((traffic_data_test,traffic_data_test2,traffic_data_test3))
 
-features_plot1_W,oClass_plot1=extractFeaturesWavelet(features_plot1_W,scales,Class=0)
-features_plot2_W,oClass_plot2=extractFeaturesWavelet(features_plot2_W,scales,Class=1)
-features_plot3_W,oClass_plot3=extractFeaturesWavelet(features_plot3_W,scales,Class=2)
+features_plot1_W,oClass_plot1=extractFeaturesWavelet(traffic_data_test,scales,Class=0)
+features_plot2_W,oClass_plot2=extractFeaturesWavelet(traffic_data_test2,scales,Class=1)
+features_plot3_W,oClass_plot3=extractFeaturesWavelet(traffic_data_test3,scales,Class=2)
 testFeaturesW=np.vstack((features_plot1_W,features_plot2_W,features_plot3_W))
 
 alltestFeatures=np.hstack((testFeatures,testFeaturesW))
