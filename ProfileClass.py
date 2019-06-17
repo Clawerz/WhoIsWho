@@ -10,6 +10,8 @@ import time
 import sys
 import warnings
 import scalogram
+from collections import Counter 
+
 warnings.filterwarnings('ignore')
 
 # Function that waits for a user enter before continuing
@@ -307,7 +309,7 @@ def main ():
 # Main Code
 def main_v2 (data1):
 	Classes={0:'Kid',1:'Teenager',2:'Adult', 3:'Live'}
-	plotEnable = 0;
+	plotEnable = 0
 
 	# Read data from files and plot the download + upload traffic
 	# We don't need to verify if it is download or upload at least by now
@@ -369,7 +371,7 @@ def main_v2 (data1):
 	pcaFeatures = pca.fit(allFeatures).transform(allFeatures)
 
 	#Extract all features.
-	live_traffic, oClass_life= extractFeatures(live_data_train,Class=3)
+	live_traffic, oClass_live= extractFeatures(live_data_train,Class=3)
 
 	features_traffic,oClass_traffic = extractFeatures(traffic_data_test,Class=0)
 	features_traffic2,oClass_traffic2 = extractFeatures(traffic_data_test2,Class=1)
@@ -395,6 +397,8 @@ def main_v2 (data1):
 
 	pca = PCA(n_components=4, svd_solver='full')
 	NormPcaFeatures = pca.fit(NormAllFeatures).transform(NormAllFeatures)
+	#NormTestPcaFeatures = pca.fit(NormAllTestFeatures).transform(NormAllTestFeatures)
+
 	NormTestPcaFeatures = pca.transform(NormAllTestFeatures)
 
 	from sklearn.neural_network import MLPClassifier
@@ -408,12 +412,16 @@ def main_v2 (data1):
 	print('class (from test PCA):',LT)
 
 	nObsTest,nFea=NormTestPcaFeatures.shape
+	
+	occurence_count= Counter(LT)
+	print('Most Common', Classes[occurence_count.most_common(1)[0][0]])
+	
 	for i in range(nObsTest):
+
 		print('Obs: {:2}: Classification->{}'.format(i,Classes[LT[i]]))
 
 
 
-
-plotEnable = 0;
+plotEnable = 0
 #main()
 main_v2("test.dat")

@@ -13,14 +13,14 @@ def main():
 	byte_set = []
 
 	while (elapsed_time < 60*5):
-		byte_set.append(sniffer_main(1));
-		elapsed_time = time.time() - start_time;
+		byte_set.append(sniffer_main(1))
+		elapsed_time = time.time() - start_time
 	
 	print(*byte_set, sep = ", ")  
 	createDat('live.dat', byte_set)
 
 	# Get evaluation
-	main_v2('live.dat')
+	main_v2('test.dat')
 
 # Creates a .dat file with the dataset generated
 def createDat(name,data):
