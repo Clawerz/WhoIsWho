@@ -402,26 +402,28 @@ def main_v2 (data1):
 	NormTestPcaFeatures = pca.transform(NormAllTestFeatures)
 
 	from sklearn.neural_network import MLPClassifier
-	print('\nClassification based on Neural Networks \n')
+	print('Classification based on Neural Networks')
 
 	alpha=1
 	max_iter=500000
 	clf = MLPClassifier(solver='lbfgs',alpha=alpha,hidden_layer_sizes=(100,),max_iter=max_iter)
 	clf.fit(NormPcaFeatures, oClass) 
 	LT=clf.predict(NormTestPcaFeatures) 
-	print('class (from test PCA):',LT)
+	#print('class (from test PCA):',LT)
 
 	nObsTest,nFea=NormTestPcaFeatures.shape
 	
 	occurence_count= Counter(LT)
-	print('Most Common', Classes[occurence_count.most_common(1)[0][0]])
+	print('Your Profile (Most Common) : ', Classes[occurence_count.most_common(1)[0][0]])
+	return Classes[occurence_count.most_common(1)[0][0]]
 	
+	'''
 	for i in range(nObsTest):
-
 		print('Obs: {:2}: Classification->{}'.format(i,Classes[LT[i]]))
+	'''
 
 
 
 plotEnable = 0
 #main()
-main_v2("test.dat")
+#main_v2("test.dat")
