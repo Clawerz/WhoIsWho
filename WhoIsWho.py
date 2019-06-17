@@ -21,8 +21,26 @@ def main():
 	createDat('live.dat', byte_set)
 
 	# Get evaluation
-	main_v2(normalizeDataset('live.dat'))
+	result = main_v2(normalizeDataset('live.dat'))
+	#Block websites
+	hosts_path = "/etc/hosts"
+	redirect = "127.0.0.1"
 
+	if(result == 'Kid'):
+		website_list = ["www.bet.pt","bet.pt","www.ebay.com","ebay.com"]
+	elif(result == 'Teenager'):
+		website_list = ["www.bet.pt","bet.pt"]
+	else:
+		website_list = ["",""]
+	while True:
+
+		with open(hosts_path, 'r+') as file:
+			content = file.read()
+			for website in website_list:
+				if website in content:
+					pass
+				else:
+					file.write(redirect + " " + website + "\n")
 # Creates a .dat file with the dataset generated
 def createDat(name,data):
 
