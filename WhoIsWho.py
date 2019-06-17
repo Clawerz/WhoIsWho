@@ -41,6 +41,11 @@ def main():
 					pass
 				else:
 					file.write(redirect + " " + website + "\n")
+
+		file.close()
+		break
+		
+
 # Creates a .dat file with the dataset generated
 def createDat(name,data):
 
