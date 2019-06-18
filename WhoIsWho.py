@@ -13,7 +13,7 @@ def main():
 	byte_set = []
 
 	print('Capturing traffic and defining your profile ...')
-	while (elapsed_time < 2*5):
+	while (elapsed_time < 1*10):
 		byte_set.append(sniffer_main(1,1))
 		elapsed_time = time.time() - start_time
 	
@@ -25,26 +25,24 @@ def main():
 	#Block websites
 	hosts_path = "/etc/hosts"
 	redirect = "127.0.0.1"
-
 	if(result == 'Kid'):
 		website_list = ["www.bet.pt","bet.pt","www.ebay.com","ebay.com"]
 	elif(result == 'Teenager'):
 		website_list = ["www.bet.pt","bet.pt"]
 	else:
-		website_list = ["",""]
+		website_list = ["www.youtube.com","youtube.com"]
 	while True:
 
-		with open(hosts_path, 'r+') as file:
-			content = file.read()
+		with open(hosts_path, 'r') as in_file:
+			data= in_file.readlines()
+		in_file.close()
+		with open(hosts_path, 'w') as out_file:
+			out_file.writelines(data[:12])
 			for website in website_list:
-				if website in content:
-					pass
-				else:
-					file.write(redirect + " " + website + "\n")
+				out_file.write(redirect + " " + website + "\n")
 
-		file.close()
+		out_file.close()
 		break
-		
 
 # Creates a .dat file with the dataset generated
 def createDat(name,data):
